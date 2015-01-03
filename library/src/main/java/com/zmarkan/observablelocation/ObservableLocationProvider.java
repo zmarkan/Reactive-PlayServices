@@ -10,7 +10,7 @@ import rx.Observable;
 /**
  * Created by zan on 26/12/14.
  */
-public interface ReactiveLocationProvider {
+public interface ObservableLocationProvider {
 
     /**
      * Base request.
@@ -23,9 +23,14 @@ public interface ReactiveLocationProvider {
      * @param locationRequest the request with all parameters set
      * */
     public Observable<Location> provideSingleLocationUpdate(LocationRequest locationRequest);
-
+    
+    
     /**
      * Default request. Will provide fused location updates every 5-10 seconds
      * */
     public Observable<Location> provideLocationUpdates();
+
+    
+    public Observable<Location> provideSingleLocationUpdate();
+
 }

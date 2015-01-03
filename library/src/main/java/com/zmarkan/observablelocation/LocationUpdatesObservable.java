@@ -21,13 +21,16 @@ import rx.subscriptions.Subscriptions;
  */
 public class LocationUpdatesObservable implements Observable.OnSubscribe<Location> {
 
-    @Inject
-    FusedLocationProviderApi locationProviderAPI;
-    @Inject
-    GoogleApiClient googleAPIClient;
+    final FusedLocationProviderApi locationProviderAPI;
+    final GoogleApiClient googleAPIClient;
 
     private Subscriber<? super Location> observer;
     private LocationListener locationListener;
+    
+    public LocationUpdatesObservable(GoogleApiClient googleAPIClient, FusedLocationProviderApi locationProviderAPI){
+        this.googleAPIClient = googleAPIClient;
+        this.locationProviderAPI = locationProviderAPI;
+    }
 
     @Override
     public void call(Subscriber<? super Location> subscriber) {

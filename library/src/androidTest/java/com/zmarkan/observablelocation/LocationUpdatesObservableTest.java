@@ -43,9 +43,7 @@ public class LocationUpdatesObservableTest extends InstrumentationTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        sut = new LocationUpdatesObservable();
-        sut.googleAPIClient = mockGoogleAPIClient;
-        sut.locationProviderAPI = mockLocationProvider;
+        sut = new LocationUpdatesObservable(mockGoogleAPIClient, mockLocationProvider);
 
         testSubscriber = new TestSubscriber<>();
 

@@ -1,23 +1,32 @@
 package com.zmarkan.observablelocation;
 
+import android.content.Context;
 import android.location.Location;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 
 import rx.Observable;
 
 /**
  * Created by zan on 26/12/14.
  */
-public class ReactiveLocationProviderImpl implements ReactiveLocationProvider {
+public class ObservableLocationProviderImpl implements ObservableLocationProvider {
 
+    private Context mContext;
+    
+    public ObservableLocationProviderImpl(Context context){
+        mContext = context;
+    }
+    
     @Override
     public Observable<Location> provideLocationUpdates(LocationRequest locationRequest) {
-
-        Observable.OnSubscribe<Location> locationUpdatesObservable = new LocationUpdatesObservable();
-
-
-
+        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(mContext)
+                .addApi(LocationServices.API)
+                .build();
+        Observable.OnSubscribe<Location> locationUpdatesObservable = 
+                new LocationUpdatesObservable(googleApiClient, LocationServices.FusedLocationApi);
         return Observable.create(locationUpdatesObservable);
     }
 
@@ -29,6 +38,11 @@ public class ReactiveLocationProviderImpl implements ReactiveLocationProvider {
     @Override
     public Observable<Location> provideLocationUpdates() {
         return provideLocationUpdates(createDefaultLocationRequest());
+    }
+
+    @Override
+    public Observable<Location> provideSingleLocationUpdate() {
+        return provideSingleLocationUpdate(createDefaultLocationRequest());
     }
 
     private LocationRequest createDefaultLocationRequest(){
