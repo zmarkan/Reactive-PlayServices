@@ -6,6 +6,7 @@ import android.location.Location;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.zmarkan.observablelocation.observable.LocationUpdatesObservable;
 
 import rx.Observable;
 
