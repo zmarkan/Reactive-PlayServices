@@ -86,10 +86,8 @@ public class LocationUpdatesObservable implements Observable.OnSubscribe<Locatio
         @Override
         public void call() {
             if (googleAPIClient.isConnected() || googleAPIClient.isConnecting()) {
-                if (googleAPIClient.isConnected()) {
-                    locationProviderAPI.removeLocationUpdates(googleAPIClient, locationListener);
-                    googleAPIClient.disconnect();
-                }
+                locationProviderAPI.removeLocationUpdates(googleAPIClient, locationListener);
+                googleAPIClient.disconnect();
             }
         }
     }
