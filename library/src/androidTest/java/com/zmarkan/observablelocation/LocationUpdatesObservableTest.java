@@ -17,7 +17,10 @@ import org.mockito.MockitoAnnotations;
 import rx.observers.TestSubscriber;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by zan on 26/12/14.
@@ -29,9 +32,8 @@ public class LocationUpdatesObservableTest extends InstrumentationTestCase {
     private static final double LNG = -122.086966;
     private static final float ACCURACY = 3.0f;
 
-    @Mock
     GoogleApiClient mockGoogleAPIClient;
-    @Mock
+
     FusedLocationProviderApi mockLocationProvider;
 
     private LocationUpdatesObservable sut;
@@ -43,6 +45,9 @@ public class LocationUpdatesObservableTest extends InstrumentationTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+
+        setupMocks();
+
         sut = new LocationUpdatesObservable(mockGoogleAPIClient, mockLocationProvider);
 
         testSubscriber = new TestSubscriber<>();
@@ -51,6 +56,11 @@ public class LocationUpdatesObservableTest extends InstrumentationTestCase {
                 ArgumentCaptor.forClass(LocationUpdatesObservable.APIConnectionCallbacks.class);
         locationListenerCaptor =
                 ArgumentCaptor.forClass(LocationListener.class);
+    }
+
+    private void setupMocks() {
+        mockGoogleAPIClient = mock(GoogleApiClient.class);
+        mockLocationProvider = mock(FusedLocationProviderApi.class);
     }
 
     @SmallTest
@@ -93,6 +103,69 @@ public class LocationUpdatesObservableTest extends InstrumentationTestCase {
         connectionCallbackCaptor.getValue().onConnectionFailed(failedConnection);
 
         assertEquals(1, testSubscriber.getOnErrorEvents().size());
+    }
+
+    @SmallTest
+    public void test_unsubscribeUnregistersWhenGoogleApiConnected() {
+        when(mockGoogleAPIClient.isConnected()).thenReturn(true);
+
+        sut.call(testSubscriber);
+        testSubscriber.unsubscribe();
+
+        verify(mockLocationProvider,times(1)).removeLocationUpdates(any(GoogleApiClient.class), any(LocationListener.class));
+    }
+
+    @SmallTest
+    public void test_unsubscribeDisconnectsWhenGoogleApiConnected() {
+        when(mockGoogleAPIClient.isConnected()).thenReturn(true);
+
+        sut.call(testSubscriber);
+        testSubscriber.unsubscribe();
+
+        verify(mockGoogleAPIClient,times(1)).disconnect();
+    }
+
+    @SmallTest
+    public void test_unsubscribeUnregistersWhenGoogleApiConnecting() {
+        when(mockGoogleAPIClient.isConnecting()).thenReturn(true);
+
+        sut.call(testSubscriber);
+        testSubscriber.unsubscribe();
+
+        verify(mockLocationProvider,times(1)).removeLocationUpdates(any(GoogleApiClient.class), any(LocationListener.class));
+    }
+
+
+    @SmallTest
+    public void test_unsubscribeDisconnectsWhenGoogleApiConnecting() {
+        when(mockGoogleAPIClient.isConnecting()).thenReturn(true);
+
+        sut.call(testSubscriber);
+        testSubscriber.unsubscribe();
+
+        verify(mockGoogleAPIClient,times(1)).disconnect();
+    }
+
+    @SmallTest
+    public void test_unsubscribeDoesNotUnregistersWhenGoogleApiNotConnectedOrConnecting() {
+        when(mockGoogleAPIClient.isConnected()).thenReturn(false);
+        when(mockGoogleAPIClient.isConnecting()).thenReturn(false);
+
+        sut.call(testSubscriber);
+        testSubscriber.unsubscribe();
+
+        verify(mockLocationProvider,times(0)).removeLocationUpdates(any(GoogleApiClient.class), any(LocationListener.class));
+    }
+
+    @SmallTest
+    public void test_unsubscribeDoesNotDisconnectsWhenGoogleApiNotConnected() {
+        when(mockGoogleAPIClient.isConnected()).thenReturn(false);
+        when(mockGoogleAPIClient.isConnecting()).thenReturn(false);
+
+        sut.call(testSubscriber);
+        testSubscriber.unsubscribe();
+
+        verify(mockGoogleAPIClient,times(0)).disconnect();
     }
 
     public Location createLocation(double lat, double lng, float accuracy) {
