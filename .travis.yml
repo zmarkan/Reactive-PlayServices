@@ -1,0 +1,38 @@
+sudo: false
+
+language: android
+
+android:
+  components:
+  - tools
+  - platform-tools
+  - build-tools-21.1.2
+  - android-21
+  - sys-img-armeabi-v7a-android-21
+  - extra-google-google_play_services
+  - extra-android-support
+  - extra-android-m2repository
+  - extra-google-m2repository
+
+licenses:
+  - android-sdk-license-5be876d5
+
+before_script:
+  - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
+  - emulator -avd test -no-skin -no-audio -no-window &
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
+
+script:
+  - adb logcat -c
+  - gradle connectedCheck
+
+after_success:
+  - mkdir ./library/build/reports/
+  - mkdir ./library/build/reports/jacoco
+  - mkdir ./library/build/reports/jacoco/test
+  - mv ./library/build/outputs/reports/coverage/debug/report.xml ./library/build/reports/jacoco/test/jacocoTestReport.xml
+  - gradle coveralls
+
+after_failure:
+  - adb logcat -d E
