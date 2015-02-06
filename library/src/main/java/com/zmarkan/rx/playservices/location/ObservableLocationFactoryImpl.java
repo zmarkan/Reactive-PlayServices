@@ -25,6 +25,7 @@ public class ObservableLocationFactoryImpl implements ObservableLocationFactory{
                 .build();
     }
 
+    @Override
     public Observable<Location> getObservable(final LocationRequest locationRequest) {
         return Observable.create(new ObservableConnection(mGoogleApiClient))
                 .filter(new ConnectionStatusFilter())

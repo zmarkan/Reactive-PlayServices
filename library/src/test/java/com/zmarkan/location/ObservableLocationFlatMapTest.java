@@ -35,7 +35,7 @@ public class ObservableLocationFlatMapTest {
     @Test
     public void test_returnsObservableLocation() {
         Observable<Location> loc = sut.call(ObservableConnection.CONNECTION_STATUS.CONNECTED);
-        
+
         assertNotNull(loc);
     }
 }
