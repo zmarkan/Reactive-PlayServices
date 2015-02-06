@@ -1,7 +1,6 @@
 package com.zmarkan.location;
 
 import android.location.Location;
-import android.test.InstrumentationTestCase;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderApi;
@@ -17,9 +16,11 @@ import rx.observers.TestSubscriber;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.RETURNS_DEFAULTS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by zan on 26/12/14.
@@ -57,6 +58,14 @@ public class ObservableLocationTest {
     }
 
     @Test
+    public void test_onSubscribeAddsLocationListener() {
+        sut.call(testSubscriber);
+        testSubscriber.unsubscribe();
+
+        verify(mockLocationProvider,times(1)).requestLocationUpdates(any(GoogleApiClient.class), any(LocationRequest.class), any(LocationListener.class));
+    }
+
+    @Test
     public void test_callSubscribe_startsReceivingLocationUpdates(){
         sut.call(testSubscriber);
         verify(mockLocationProvider, times(1)).requestLocationUpdates(
@@ -77,7 +86,7 @@ public class ObservableLocationTest {
     }
 
     private Location createLocation(double lat, double lng, float accuracy) {
-        Location newLocation = new Location(PROVIDER);
+        Location newLocation = mock(Location.class, RETURNS_DEFAULTS);
         newLocation.setLatitude(lat);
         newLocation.setLongitude(lng);
         newLocation.setAccuracy(accuracy);
