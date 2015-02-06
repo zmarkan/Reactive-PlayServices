@@ -6,8 +6,10 @@ import android.location.Location;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.zmarkan.rx.playservices.connection.ObservableConnection;
 
 import rx.Observable;
+import rx.functions.Func1;
 
 /**
  * Created by zan on 26/12/14.
@@ -22,12 +24,22 @@ public class ObservableLocationProviderImpl implements ObservableLocationProvide
     
     @Override
     public Observable<Location> provideLocationUpdates(LocationRequest locationRequest) {
-        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(mContext)
+        final GoogleApiClient googleApiClient = new GoogleApiClient.Builder(mContext)
                 .addApi(LocationServices.API)
                 .build();
-        Observable.OnSubscribe<Location> locationUpdatesObservable = 
-                new LocationUpdatesObservable(googleApiClient, LocationServices.FusedLocationApi);
-        return Observable.create(locationUpdatesObservable);
+        return Observable.create(new ObservableConnection(googleApiClient)).filter(new Func1<ObservableConnection.CONNECTION_STATUS, Boolean>() {
+            @Override
+            public Boolean call(ObservableConnection.CONNECTION_STATUS connection_status) {
+                return connection_status.compareTo(ObservableConnection.CONNECTION_STATUS.CONNECTED) == 0;;
+            }
+        }).flatMap(
+                new Func1() {
+                    @Override
+                    public Observable<Location> call(Object o) {
+                        return Observable.create(new LocationUpdatesObservable(googleApiClient, LocationServices.FusedLocationApi));
+                    }
+                }
+        );
     }
 
     @Override
@@ -43,12 +55,5 @@ public class ObservableLocationProviderImpl implements ObservableLocationProvide
     @Override
     public Observable<Location> provideSingleLocationUpdate() {
         return provideSingleLocationUpdate(createDefaultLocationRequest());
-    }
-
-    private LocationRequest createDefaultLocationRequest(){
-        return LocationRequest.create().
-                setInterval(10000).
-                setFastestInterval(5000).
-                setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 }
