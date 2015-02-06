@@ -16,6 +16,7 @@ import rx.observers.TestSubscriber;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.RETURNS_DEFAULTS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -85,10 +86,10 @@ public class ObservableLocationTest {
     }
 
     private Location createLocation(double lat, double lng, float accuracy) {
-        Location newLocation = mock(Location.class);
-        when(newLocation.getLatitude()).thenReturn(lat);
-        when(newLocation.getLongitude()).thenReturn(lng);
-        when(newLocation.getAccuracy()).thenReturn(accuracy);
+        Location newLocation = mock(Location.class, RETURNS_DEFAULTS);
+        newLocation.setLatitude(lat);
+        newLocation.setLongitude(lng);
+        newLocation.setAccuracy(accuracy);
         return newLocation;
     }
 
