@@ -23,12 +23,6 @@ public class LocationUpdatesObservable implements Observable.OnSubscribe<Locatio
 
     private Subscriber<? super Location> observer;
     private LocationListener mLocationListener;
-    
-    public LocationUpdatesObservable(GoogleApiClient googleAPIClient, FusedLocationProviderApi locationProviderAPI){
-        this.mLocationProviderAPI = locationProviderAPI;
-        this.mGoogleAPIClient = googleAPIClient;
-        mLocationRequest = buildLocationRequest();
-    }
 
     public LocationUpdatesObservable(GoogleApiClient googleAPIClient, FusedLocationProviderApi locationProviderAPI, LocationRequest request){
         this.mLocationProviderAPI = locationProviderAPI;
@@ -54,14 +48,6 @@ public class LocationUpdatesObservable implements Observable.OnSubscribe<Locatio
             }
         };
         mLocationProviderAPI.requestLocationUpdates(mGoogleAPIClient, mLocationRequest, mLocationListener);
-    }
-
-    private LocationRequest buildLocationRequest() {
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        return locationRequest;
     }
 
     class UnsubscribeAction implements Action0 {
