@@ -15,7 +15,7 @@ import rx.subscriptions.Subscriptions;
 /**
  * Created by zan on 26/12/14.
  */
-public class LocationUpdatesObservable implements Observable.OnSubscribe<Location> {
+public class ObservableLocation implements Observable.OnSubscribe<Location> {
 
     final FusedLocationProviderApi mLocationProviderAPI;
     final GoogleApiClient mGoogleAPIClient;
@@ -24,7 +24,7 @@ public class LocationUpdatesObservable implements Observable.OnSubscribe<Locatio
     private Subscriber<? super Location> observer;
     private LocationListener mLocationListener;
 
-    public LocationUpdatesObservable(GoogleApiClient googleAPIClient, FusedLocationProviderApi locationProviderAPI, LocationRequest request){
+    public ObservableLocation(GoogleApiClient googleAPIClient, FusedLocationProviderApi locationProviderAPI, LocationRequest request){
         this.mLocationProviderAPI = locationProviderAPI;
         this.mGoogleAPIClient = googleAPIClient;
         this.mLocationRequest = request;

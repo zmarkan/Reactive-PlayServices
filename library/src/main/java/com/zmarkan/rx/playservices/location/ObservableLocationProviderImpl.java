@@ -36,7 +36,7 @@ public class ObservableLocationProviderImpl implements ObservableLocationProvide
                 new Func1() {
                     @Override
                     public Observable<Location> call(Object o) {
-                        return Observable.create(new LocationUpdatesObservable(googleApiClient, LocationServices.FusedLocationApi, locationRequest));
+                        return Observable.create(new ObservableLocation(googleApiClient, LocationServices.FusedLocationApi, locationRequest));
                     }
                 }
         );

@@ -5,6 +5,7 @@ import android.location.Location;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -88,13 +89,5 @@ public class ObservableConnectionTest {
         testSubscriber.unsubscribe();
 
         verify(mockGoogleAPIClient,times(0)).disconnect();
-    }
-
-    public Location createLocation(double lat, double lng, float accuracy) {
-        Location newLocation = new Location(PROVIDER);
-        newLocation.setLatitude(lat);
-        newLocation.setLongitude(lng);
-        newLocation.setAccuracy(accuracy);
-        return newLocation;
     }
 }
