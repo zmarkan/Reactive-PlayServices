@@ -22,7 +22,7 @@ android {
     }
 
     testOptions {
-        unitTests.returnDefaultValues = true
+        unitTests.setReturnDefaultValues(true)
     }
 }
 

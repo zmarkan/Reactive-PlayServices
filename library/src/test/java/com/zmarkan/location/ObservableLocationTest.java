@@ -1,7 +1,6 @@
 package com.zmarkan.location;
 
 import android.location.Location;
-import android.test.InstrumentationTestCase;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderApi;
@@ -20,6 +19,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by zan on 26/12/14.
@@ -77,10 +77,10 @@ public class ObservableLocationTest {
     }
 
     private Location createLocation(double lat, double lng, float accuracy) {
-        Location newLocation = new Location(PROVIDER);
-        newLocation.setLatitude(lat);
-        newLocation.setLongitude(lng);
-        newLocation.setAccuracy(accuracy);
+        Location newLocation = mock(Location.class);
+        when(newLocation.getLatitude()).thenReturn(lat);
+        when(newLocation.getLongitude()).thenReturn(lng);
+        when(newLocation.getAccuracy()).thenReturn(accuracy);
         return newLocation;
     }
 
