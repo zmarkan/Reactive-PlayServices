@@ -1,4 +1,4 @@
-package com.zmarkan.observablelocation;
+package com.zmarkan.location;
 
 import android.location.Location;
 import android.test.InstrumentationTestCase;
