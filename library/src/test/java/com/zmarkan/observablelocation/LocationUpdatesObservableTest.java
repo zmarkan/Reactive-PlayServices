@@ -9,10 +9,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+import com.zmarkan.rx.playservices.location.LocationUpdatesObservable;
 
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import rx.observers.TestSubscriber;
 
@@ -25,6 +24,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by zan on 26/12/14.
  */
+/*
 public class LocationUpdatesObservableTest extends InstrumentationTestCase {
 
     private static final String PROVIDER = "flp";
@@ -176,3 +176,4 @@ public class LocationUpdatesObservableTest extends InstrumentationTestCase {
         return newLocation;
     }
 }
+*/

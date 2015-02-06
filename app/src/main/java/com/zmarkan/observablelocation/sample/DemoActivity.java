@@ -8,8 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.zmarkan.observablelocation.ObservableLocationProvider;
-import com.zmarkan.observablelocation.ObservableLocationProviderImpl;
+import com.zmarkan.rx.playservices.location.ObservableLocationProvider;
+import com.zmarkan.rx.playservices.location.ObservableLocationProviderImpl;
 
 import java.util.Date;
 

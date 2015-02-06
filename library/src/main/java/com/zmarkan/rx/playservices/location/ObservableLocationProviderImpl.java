@@ -1,4 +1,4 @@
-package com.zmarkan.observablelocation;
+package com.zmarkan.rx.playservices.location;
 
 import android.content.Context;
 import android.location.Location;
