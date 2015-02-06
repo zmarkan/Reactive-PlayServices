@@ -57,6 +57,14 @@ public class ObservableLocationTest {
     }
 
     @Test
+    public void test_onSubscribeAddsLocationListener() {
+        sut.call(testSubscriber);
+        testSubscriber.unsubscribe();
+
+        verify(mockLocationProvider,times(1)).requestLocationUpdates(any(GoogleApiClient.class), any(LocationRequest.class), any(LocationListener.class));
+    }
+
+    @Test
     public void test_callSubscribe_startsReceivingLocationUpdates(){
         sut.call(testSubscriber);
         verify(mockLocationProvider, times(1)).requestLocationUpdates(
