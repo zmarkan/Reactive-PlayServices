@@ -1,5 +1,6 @@
 package com.zmarkan.rx.playservices.connection;
 
+
 import com.google.android.gms.common.ConnectionResult;
 
 /**
