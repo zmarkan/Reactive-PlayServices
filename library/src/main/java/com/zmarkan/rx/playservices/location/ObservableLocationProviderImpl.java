@@ -1,50 +1,30 @@
 package com.zmarkan.rx.playservices.location;
 
-import android.content.Context;
 import android.location.Location;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.zmarkan.rx.playservices.connection.ObservableConnection;
 
 import rx.Observable;
-import rx.functions.Func1;
 
 /**
  * Created by zan on 26/12/14.
  */
 public class ObservableLocationProviderImpl implements ObservableLocationProvider {
 
-    private Context mContext;
+    private final ObservableLocationFactory mFactory;
     
-    public ObservableLocationProviderImpl(Context context){
-        mContext = context;
+    public ObservableLocationProviderImpl(ObservableLocationFactory factory) {
+        mFactory = factory;
     }
-    
+
     @Override
     public Observable<Location> provideLocationUpdates(final LocationRequest locationRequest) {
-        final GoogleApiClient googleApiClient = new GoogleApiClient.Builder(mContext)
-                .addApi(LocationServices.API)
-                .build();
-        return Observable.create(new ObservableConnection(googleApiClient)).filter(new Func1<ObservableConnection.CONNECTION_STATUS, Boolean>() {
-            @Override
-            public Boolean call(ObservableConnection.CONNECTION_STATUS connection_status) {
-                return connection_status.compareTo(ObservableConnection.CONNECTION_STATUS.CONNECTED) == 0;
-            }
-        }).flatMap(
-                new Func1() {
-                    @Override
-                    public Observable<Location> call(Object o) {
-                        return Observable.create(new ObservableLocation(googleApiClient, LocationServices.FusedLocationApi, locationRequest));
-                    }
-                }
-        );
+        return mFactory.getObservable(locationRequest);
     }
 
     @Override
     public Observable<Location> provideSingleLocationUpdate(LocationRequest locationRequest) {
-        return provideLocationUpdates(locationRequest).first();
+        return mFactory.getFirstObservable(locationRequest);
     }
 
     @Override
@@ -54,7 +34,7 @@ public class ObservableLocationProviderImpl implements ObservableLocationProvide
 
     @Override
     public Observable<Location> provideSingleLocationUpdate() {
-        return provideSingleLocationUpdate(buildLocationRequest()).first();
+        return provideSingleLocationUpdate(buildLocationRequest());
     }
 
     private LocationRequest buildLocationRequest() {
@@ -64,4 +44,6 @@ public class ObservableLocationProviderImpl implements ObservableLocationProvide
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return locationRequest;
     }
+
+
 }
