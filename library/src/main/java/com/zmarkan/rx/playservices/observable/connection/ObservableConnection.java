@@ -13,7 +13,8 @@ import rx.subscriptions.Subscriptions;
 /**
  * Created by njackson on 02/02/15.
  */
-public class ObservableConnection implements Observable.OnSubscribe<ObservableConnection.CONNECTION_STATUS> {
+public class ObservableConnection implements Observable.OnSubscribe<ObservableConnection.CONNECTION_STATUS>, GoogleApiClient.OnConnectionFailedListener,
+        GoogleApiClient.ConnectionCallbacks {
 
     private static final String TAG = "GooglePlayConnectionObservable";
 
@@ -22,8 +23,8 @@ public class ObservableConnection implements Observable.OnSubscribe<ObservableCo
         SUSPENDED
     }
 
+    private final ObservableConnection thisClass = this;
     private final GoogleApiClient googleAPIClient;
-    private APIConnectionCallbacks mCallbacks;
     private Subscriber<? super CONNECTION_STATUS> observer;
 
     public ObservableConnection(GoogleApiClient client) {
@@ -32,35 +33,28 @@ public class ObservableConnection implements Observable.OnSubscribe<ObservableCo
 
     @Override
     public void call(Subscriber<? super CONNECTION_STATUS> subscriber) {
-        mCallbacks = new APIConnectionCallbacks();
         observer = subscriber;
-        googleAPIClient.registerConnectionCallbacks(mCallbacks);
-        googleAPIClient.registerConnectionFailedListener(mCallbacks);
+        googleAPIClient.registerConnectionCallbacks(this);
+        googleAPIClient.registerConnectionFailedListener(this);
         googleAPIClient.connect();
 
         UnsubscribeAction unsubscribeAction = new UnsubscribeAction();
         observer.add(Subscriptions.create(unsubscribeAction));
     }
 
-    class APIConnectionCallbacks implements
-            GoogleApiClient.OnConnectionFailedListener,
-            GoogleApiClient.ConnectionCallbacks {
+    @Override
+    public void onConnected(Bundle bundle) {
+        observer.onNext(CONNECTION_STATUS.CONNECTED);
+    }
 
-        @Override
-        public void onConnected(Bundle bundle) {
-            observer.onNext(CONNECTION_STATUS.CONNECTED);
-        }
+    @Override
+    public void onConnectionSuspended(int i) {
+        observer.onNext(CONNECTION_STATUS.SUSPENDED);
+    }
 
-        @Override
-        public void onConnectionSuspended(int i) {
-            observer.onNext(CONNECTION_STATUS.SUSPENDED);
-        }
-
-        @Override
-        public void onConnectionFailed(ConnectionResult connectionResult) {
-            observer.onError(new ThrowableConnectionResult(connectionResult.toString(), connectionResult));
-        }
-
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        observer.onError(new ThrowableConnectionResult(connectionResult.toString(), connectionResult));
     }
 
     class UnsubscribeAction implements Action0 {
@@ -69,8 +63,8 @@ public class ObservableConnection implements Observable.OnSubscribe<ObservableCo
             if (googleAPIClient.isConnected() || googleAPIClient.isConnecting()) {
                 googleAPIClient.disconnect();
             }
-            googleAPIClient.unregisterConnectionFailedListener(mCallbacks);
-            googleAPIClient.unregisterConnectionCallbacks(mCallbacks);
+            googleAPIClient.unregisterConnectionFailedListener(thisClass);
+            googleAPIClient.unregisterConnectionCallbacks(thisClass);
         }
     }
 

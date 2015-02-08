@@ -1,12 +1,19 @@
 package com.zmarkan.rx.playservices.observable.connection;
 
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.os.Bundle;
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.LocationListener;
 
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import rx.observers.TestSubscriber;
 
@@ -88,5 +95,36 @@ public class ObservableConnectionTest extends AndroidTestCase {
         testSubscriber.unsubscribe();
 
         verify(mockGoogleAPIClient,times(0)).disconnect();
+    }
+
+    @SmallTest
+    public void test_onConnectedCallsOnNextWithConnected() {
+        sut.call(testSubscriber);
+        sut.onConnected(new Bundle());
+
+        testSubscriber.assertReceivedOnNext(Arrays.asList(ObservableConnection.CONNECTION_STATUS.CONNECTED));
+    }
+
+    @SmallTest
+    public void test_onConnectionSuspendedCallsOnNextWithSuspended() {
+        sut.call(testSubscriber);
+        sut.onConnectionSuspended(1);
+
+        testSubscriber.assertReceivedOnNext(Arrays.asList(ObservableConnection.CONNECTION_STATUS.SUSPENDED));
+    }
+
+    @SmallTest
+    public void test_onConnectionFailedThrowsErrorWithResolution() {
+        ConnectionResult result = new ConnectionResult(12,
+                PendingIntent.getBroadcast(getContext(),23,new Intent("SHIZ"),3)
+        );
+        sut.call(testSubscriber);
+        sut.onConnectionFailed(result);
+
+        testSubscriber.assertTerminalEvent();
+        assertEquals(result,
+                ((ThrowableConnectionResult)testSubscriber.getOnErrorEvents().get(0))
+                .getResult()
+        );
     }
 }
