@@ -8,8 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.zmarkan.observablelocation.ObservableLocationProvider;
-import com.zmarkan.observablelocation.ObservableLocationProviderImpl;
+import com.zmarkan.rx.playservices.provider.location.ObservableLocationFactoryImpl;
+import com.zmarkan.rx.playservices.provider.location.ObservableLocationProvider;
+import com.zmarkan.rx.playservices.provider.location.ObservableLocationProviderImpl;
 
 import java.util.Date;
 
@@ -35,7 +36,7 @@ public class DemoActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo);
-        observableLocationProvider = new ObservableLocationProviderImpl(this);
+        observableLocationProvider = new ObservableLocationProviderImpl(new ObservableLocationFactoryImpl(this));
         
         getUpdatesButton = (Button) findViewById(R.id.button_get_updates);
         unsubscribeButton = (Button) findViewById(R.id.button_unsubscribe);
