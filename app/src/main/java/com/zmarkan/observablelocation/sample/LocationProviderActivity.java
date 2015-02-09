@@ -8,8 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.zmarkan.observablelocation.ObservableLocationProvider;
-import com.zmarkan.observablelocation.ObservableLocationProviderImpl;
+import com.zmarkan.rx.playservices.provider.location.ObservableLocationFactoryImpl;
+import com.zmarkan.rx.playservices.provider.location.ObservableLocationProvider;
+import com.zmarkan.rx.playservices.provider.location.ObservableLocationProviderImpl;
 
 import java.util.Date;
 
@@ -18,7 +19,7 @@ import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
 
-public class DemoActivity extends Activity {
+public class LocationProviderActivity extends Activity {
     
     Button getUpdatesButton;
     Button unsubscribeButton;
@@ -35,7 +36,7 @@ public class DemoActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo);
-        observableLocationProvider = new ObservableLocationProviderImpl(this);
+        observableLocationProvider = new ObservableLocationProviderImpl(new ObservableLocationFactoryImpl(this));
         
         getUpdatesButton = (Button) findViewById(R.id.button_get_updates);
         unsubscribeButton = (Button) findViewById(R.id.button_unsubscribe);
@@ -82,7 +83,7 @@ public class DemoActivity extends Activity {
     class LocationUpdatedAction implements Action1<Location>{
         @Override
         public void call(Location location) {
-            Log.d(DemoActivity.this.getClass().getSimpleName(), "location");
+            Log.d(LocationProviderActivity.this.getClass().getSimpleName(), "location");
 
             String lastUpdated = "Last updated: " + new Date().getTime()/1000;
             longitudeTextView.setText(String.valueOf(location.getLongitude()));
@@ -96,14 +97,14 @@ public class DemoActivity extends Activity {
         public void call(Throwable throwable) {
             String lastError = "Error: " + new Date().getTime()/1000;
             lastUpdatedTextView.setText(lastError);
-            Log.d(DemoActivity.this.getClass().getSimpleName(), throwable.getMessage());
+            Log.d(LocationProviderActivity.this.getClass().getSimpleName(), throwable.getMessage());
         }
     }
     
     class LocationUpdatesCompleteAction implements Action0{
         @Override
         public void call() {
-            Log.d(DemoActivity.this.getClass().getSimpleName(), "completed");
+            Log.d(LocationProviderActivity.this.getClass().getSimpleName(), "completed");
             String lastCompleted = "Completed: " + new Date().getTime()/1000;
             lastUpdatedTextView.setText(lastCompleted);
         }
